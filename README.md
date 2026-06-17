@@ -1,4 +1,4 @@
-# y2jb-updater-dup-testing
+# y2jb-dup-testing
 this is a repository that tests alternatives for dup
 
 
