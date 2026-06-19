@@ -942,8 +942,8 @@
             const payload = 0x12;  // arbitrary, sent and received as normal data
             const payload_size = 1;  // 1 byte (can be 1/2/4/8 bytes)
 
-            let new_fd64 = null;
-            let new_fd32 = null;
+            let dup_fd64 = null;
+            let dup_fd32 = null;
 
             // sending and receiving the payload as normal data and the fd through SCM_RIGHTS control data using sendmsg and recvmsg
 
@@ -1419,8 +1419,8 @@
                             test_log_arr.push(toHex(recvmsg_msg_control_cmsg_data64));
 
                             if (validate_fd32(recvmsg_msg_control_cmsg_data32)) {
-                                new_fd64 = recvmsg_msg_control_cmsg_data64;
-                                new_fd32 = recvmsg_msg_control_cmsg_data32;
+                                dup_fd64 = recvmsg_msg_control_cmsg_data64;
+                                dup_fd32 = recvmsg_msg_control_cmsg_data32;
 
                                 const sendmsg_msg_control_cmsg_data32 = sendmsg_msg_control_cmsg_data;
 
@@ -1513,25 +1513,25 @@
                                     // https://man.freebsd.org/cgi/man.cgi?query=fcntl
                                     //
                                     // int fcntl(int fd, int cmd, int arg);
-                                    const new_fd64_fcntl_getfd_fd = new_fd64;
-                                    const new_fd64_fcntl_getfd_cmd = F_GETFD;
-                                    const new_fd64_fcntl_getfd_arg = 0n;  // no special argument
+                                    const dup_fd64_fcntl_getfd_fd = dup_fd64;
+                                    const dup_fd64_fcntl_getfd_cmd = F_GETFD;
+                                    const dup_fd64_fcntl_getfd_arg = 0n;  // no special argument
 
-                                    const new_fd64_fcntl_getfd_ret64 = (
+                                    const dup_fd64_fcntl_getfd_ret64 = (
                                         syscall(
                                             SYSCALL.fcntl
-                                            , new_fd64_fcntl_getfd_fd
-                                            , new_fd64_fcntl_getfd_cmd
-                                            , new_fd64_fcntl_getfd_arg
+                                            , dup_fd64_fcntl_getfd_fd
+                                            , dup_fd64_fcntl_getfd_cmd
+                                            , dup_fd64_fcntl_getfd_arg
                                         )
                                     );
                                     
-                                    // logging new_fd64_fcntl_getfd_ret64
+                                    // logging dup_fd64_fcntl_getfd_ret64
 
-                                    test_log_arr.push("new_fd64_fcntl_getfd_ret64:");
-                                    test_log_arr.push(toHex(new_fd64_fcntl_getfd_ret64));
+                                    test_log_arr.push("dup_fd64_fcntl_getfd_ret64:");
+                                    test_log_arr.push(toHex(dup_fd64_fcntl_getfd_ret64));
                                 
-                                    if (new_fd64_fcntl_getfd_ret64 !== 0xffffffffffffffffn) {
+                                    if (dup_fd64_fcntl_getfd_ret64 !== 0xffffffffffffffffn) {
                                         method_found = true;
                                     }
                                 }
@@ -1566,25 +1566,25 @@
                                 // https://man.freebsd.org/cgi/man.cgi?query=fcntl
                                 //
                                 // int fcntl(int fd, int cmd, int arg);
-                                const new_fd64_fcntl_getfl_fd = new_fd64;
-                                const new_fd64_fcntl_getfl_cmd = F_GETFL;
-                                const new_fd64_fcntl_getfl_arg = 0n;  // no special argument
+                                const dup_fd64_fcntl_getfl_fd = dup_fd64;
+                                const dup_fd64_fcntl_getfl_cmd = F_GETFL;
+                                const dup_fd64_fcntl_getfl_arg = 0n;  // no special argument
 
-                                const new_fd64_fcntl_getfl_ret64 = (
+                                const dup_fd64_fcntl_getfl_ret64 = (
                                     syscall(
                                         SYSCALL.fcntl
-                                        , new_fd64_fcntl_getfl_fd
-                                        , new_fd64_fcntl_getfl_cmd
-                                        , new_fd64_fcntl_getfl_arg
+                                        , dup_fd64_fcntl_getfl_fd
+                                        , dup_fd64_fcntl_getfl_cmd
+                                        , dup_fd64_fcntl_getfl_arg
                                     )
                                 );
                                 
-                                // logging new_fd64_fcntl_getfl_ret64
+                                // logging dup_fd64_fcntl_getfl_ret64
 
-                                test_log_arr.push("new_fd64_fcntl_getfl_ret64:");
-                                test_log_arr.push(toHex(new_fd64_fcntl_getfl_ret64));
+                                test_log_arr.push("dup_fd64_fcntl_getfl_ret64:");
+                                test_log_arr.push(toHex(dup_fd64_fcntl_getfl_ret64));
                             
-                                if (fd64_fcntl_getfl_ret64 === new_fd64_fcntl_getfl_ret64) {
+                                if (fd64_fcntl_getfl_ret64 === dup_fd64_fcntl_getfl_ret64) {
                                     method_found = true;
                                 }
                             }
@@ -1606,7 +1606,7 @@
                 test_log_arr.push(toHex(fd64));
 
                 test_log_arr.push("duplicated fd:");
-                test_log_arr.push(toHex(new_fd64));
+                test_log_arr.push(toHex(dup_fd64));
             } else {
                 test_log_arr.push("failure");
             }
@@ -1615,7 +1615,7 @@
 
             // closing the first socket
 
-            test_log_arr.push("closing sa32:");
+            test_log_arr.push("closing the first socket:");
 
             if (close_fd32(sa32)) {
                 test_log_arr.push("success");
@@ -1625,7 +1625,7 @@
 
             // closing the second socket
 
-            test_log_arr.push("closing sb32:");
+            test_log_arr.push("closing the second socket:");
 
             if (close_fd32(sb32)) {
                 test_log_arr.push("success");
@@ -1633,11 +1633,11 @@
                 test_log_arr.push("failure");
             }
 
-            // closing the new fd
+            // closing the duplicated fd
 
-            test_log_arr.push("closing new_fd32:");
+            test_log_arr.push("closing the duplicated fd:");
 
-            if (close_fd32(new_fd32)) {
+            if (close_fd32(dup_fd32)) {
                 test_log_arr.push("success");
             } else {
                 test_log_arr.push("failure");
