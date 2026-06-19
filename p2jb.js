@@ -1593,69 +1593,51 @@
                 }
             }
 
-            // cleanup
-
-            // closing the first socket
-
-            if (method_found) {
-                method_found = false;
-
-                test_log_arr.push("closing sa32:");
-
-                if (close_fd32(sa32)) {
-                    method_found = true;
-
-                    test_log_arr.push("success");
-                } else {
-                    test_log_arr.push("failure");
-                }
-            } else {
-                close_fd32(sa32);  // ignore return value
-            }
-
-            // closing the second socket
-
-            if (method_found) {
-                method_found = false;
-
-                test_log_arr.push("closing sb32:");
-
-                if (close_fd32(sb32)) {
-                    method_found = true;
-
-                    test_log_arr.push("success");
-                } else {
-                    test_log_arr.push("failure");
-                }
-            } else {
-                close_fd32(sb32);  // ignore return value
-            }
-
-            // closing the new fd
-
-            if (method_found) {
-                method_found = false;
-
-                test_log_arr.push("closing new_fd32:");
-
-                if (close_fd32(new_fd32)) {
-                    method_found = true;
-
-                    test_log_arr.push("success");
-                } else {
-                    test_log_arr.push("failure");
-                }
-            } else {
-                close_fd32(new_fd32);  // ignore return value
-            }
-
             // logging the result
 
-            test_log_arr.push("final result:");
+            test_log_arr.push("test result:");
 
             if (method_found) {
                 // method_found = false;  // not used any further
 
+                test_log_arr.push("success");
+
+                test_log_arr.push("original fd:");
+                test_log_arr.push(toHex(fd64));
+
+                test_log_arr.push("duplicated fd:");
+                test_log_arr.push(toHex(new_fd64));
+            } else {
+                test_log_arr.push("failure");
+            }
+
+            // cleanup
+
+            // closing the first socket
+
+            test_log_arr.push("closing sa32:");
+
+            if (close_fd32(sa32)) {
+                test_log_arr.push("success");
+            } else {
+                test_log_arr.push("failure");
+            }
+
+            // closing the second socket
+
+            test_log_arr.push("closing sb32:");
+
+            if (close_fd32(sb32)) {
+                test_log_arr.push("success");
+            } else {
+                test_log_arr.push("failure");
+            }
+
+            // closing the new fd
+
+            test_log_arr.push("closing new_fd32:");
+
+            if (close_fd32(new_fd32)) {
                 test_log_arr.push("success");
             } else {
                 test_log_arr.push("failure");
