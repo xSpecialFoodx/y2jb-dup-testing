@@ -818,7 +818,7 @@
 
                 // https://man.freebsd.org/cgi/man.cgi?query=socketpair
                 //
-                // int socketpair(int domain, int type,	int protocol, int *sv);
+                // int socketpair(int domain, int type, int protocol, int *sv);
 
                 const socketpair_domain = AF_UNIX;
                 const socketpair_type = SOCK_STREAM;
@@ -831,6 +831,7 @@
                 const socketpair_sv_sb_offset = socketpair_sv_sa_offset + socketpair_sv_sa_size;
 
                 const socketpair_sv_buffer_size = socketpair_sv_sb_offset + socketpair_sv_sb_size;
+                
                 const socketpair_sv = malloc(socketpair_sv_buffer_size);
                 
                 fill_addr(socketpair_sv, socketpair_sv_buffer_size);
@@ -840,7 +841,7 @@
 
                 // https://man.freebsd.org/cgi/man.cgi?sendmsg
                 //
-                // ssize_t sendmsg(int s, const struct msghdr *msg,	int flags);
+                // ssize_t sendmsg(int s, const struct msghdr *msg, int flags);
 
                 // https://github.com/freebsd/freebsd-src/blob/main/sys/sys/socket.h
                 //
@@ -869,6 +870,8 @@
                 const sendmsg_msg_control_offset = align_up8(sendmsg_msg_iovlen_offset + sendmsg_msg_iovlen_size);
                 const sendmsg_msg_controllen_offset = sendmsg_msg_control_offset + sendmsg_msg_control_size;
                 const sendmsg_msg_flags_offset = sendmsg_msg_controllen_offset + sendmsg_msg_controllen_size;
+                
+                const sendmsg_msg_buffer_size = align_up8(sendmsg_msg_flags_offset + sendmsg_msg_flags_size);
 
                 const sendmsg_msg_name = 0n;  // NULL pointer
                 const sendmsg_msg_namelen = 0;  // 0 bytes
@@ -886,13 +889,16 @@
                 const sendmsg_msg_iov_base_offset = 0;
                 const sendmsg_msg_iov_len_offset = sendmsg_msg_iov_base_offset + sendmsg_msg_iov_base_size;
 
+                const sendmsg_msg_iov_buffer_size = align_up8(sendmsg_msg_iov_len_offset + sendmsg_msg_iov_len_size);
+
                 const sendmsg_msg_iov_base_data_size = payload_size;
 
                 const sendmsg_msg_iov_base_data_offset = 0;
 
+                const sendmsg_msg_iov_base_buffer_size = sendmsg_msg_iov_base_data_offset + sendmsg_msg_iov_base_data_size;
+
                 const sendmsg_msg_iov_base_data = payload;
 
-                const sendmsg_msg_iov_base_buffer_size = sendmsg_msg_iov_base_data_offset + sendmsg_msg_iov_base_data_size;
                 const sendmsg_msg_iov_base = malloc(sendmsg_msg_iov_base_buffer_size);
 
                 write_addr(
@@ -903,7 +909,6 @@
 
                 const sendmsg_msg_iov_len = BigInt(sendmsg_msg_iov_base_data_size);
 
-                const sendmsg_msg_iov_buffer_size = align_up8(sendmsg_msg_iov_len_offset + sendmsg_msg_iov_len_size);
                 const sendmsg_msg_iov = malloc(sendmsg_msg_iov_buffer_size);
                 
                 write_addr(sendmsg_msg_iov + BigInt(sendmsg_msg_iov_base_offset), sendmsg_msg_iov_base, sendmsg_msg_iov_base_size);
@@ -934,11 +939,12 @@
                 const sendmsg_msg_control_cmsg_type_offset = sendmsg_msg_control_cmsg_level_offset + sendmsg_msg_control_cmsg_level_size;
                 const sendmsg_msg_control_cmsg_data_offset = align_up8(sendmsg_msg_control_cmsg_type_offset + sendmsg_msg_control_cmsg_type_size);
 
+                const sendmsg_msg_control_buffer_size = align_up8(sendmsg_msg_control_cmsg_data_offset + sendmsg_msg_control_cmsg_data_size);
+
                 const sendmsg_msg_control_cmsg_len = sendmsg_msg_control_cmsg_data_offset + sendmsg_msg_control_cmsg_data_size;
                 const sendmsg_msg_control_cmsg_level = Number(SOL_SOCKET);
                 const sendmsg_msg_control_cmsg_type = Number(SCM_RIGHTS);
 
-                const sendmsg_msg_control_buffer_size = align_up8(sendmsg_msg_control_cmsg_len);
                 const sendmsg_msg_control = malloc(sendmsg_msg_control_buffer_size);
 
                 write_addr(
@@ -973,7 +979,6 @@
                 const sendmsg_msg_controllen = sendmsg_msg_control_buffer_size;
                 const sendmsg_msg_flags = 0;  // zeroed, unused by sendmsg
 
-                const sendmsg_msg_buffer_size = align_up8(sendmsg_msg_flags_offset + sendmsg_msg_flags_size);
                 const sendmsg_msg = malloc(sendmsg_msg_buffer_size);
 
                 write_addr(sendmsg_msg + BigInt(sendmsg_msg_name_offset), sendmsg_msg_name, sendmsg_msg_name_size);
@@ -1034,6 +1039,8 @@
                 const recvmsg_msg_controllen_offset = sendmsg_msg_controllen_offset;
                 const recvmsg_msg_flags_offset = sendmsg_msg_flags_offset;
 
+                const recvmsg_msg_buffer_size = sendmsg_msg_buffer_size;
+
                 const recvmsg_msg_name = 0n;  // NULL pointer (source address is not requested)
                 const recvmsg_msg_namelen = 0;  // 0 bytes (no source address buffer)
 
@@ -1050,18 +1057,20 @@
                 const recvmsg_msg_iov_base_offset = sendmsg_msg_iov_base_offset;
                 const recvmsg_msg_iov_len_offset = sendmsg_msg_iov_len_offset;
 
+                const recvmsg_msg_iov_buffer_size = sendmsg_msg_iov_buffer_size;
+
                 const recvmsg_msg_iov_base_data_size = sendmsg_msg_iov_base_data_size;
 
                 const recvmsg_msg_iov_base_data_offset = sendmsg_msg_iov_base_data_offset;
 
                 const recvmsg_msg_iov_base_buffer_size = sendmsg_msg_iov_base_buffer_size;
+
                 const recvmsg_msg_iov_base = malloc(recvmsg_msg_iov_base_buffer_size);
 
                 clear_addr(recvmsg_msg_iov_base, recvmsg_msg_iov_base_buffer_size);
 
                 const recvmsg_msg_iov_len = sendmsg_msg_iov_len;
 
-                const recvmsg_msg_iov_buffer_size = sendmsg_msg_iov_buffer_size;
                 const recvmsg_msg_iov = malloc(recvmsg_msg_iov_buffer_size);
                 
                 write_addr(recvmsg_msg_iov + BigInt(recvmsg_msg_iov_base_offset), recvmsg_msg_iov_base, recvmsg_msg_iov_base_size);
@@ -1093,6 +1102,7 @@
                 const recvmsg_msg_control_cmsg_data_offset = sendmsg_msg_control_cmsg_data_offset;
 
                 const recvmsg_msg_control_buffer_size = sendmsg_msg_control_buffer_size;
+                
                 const recvmsg_msg_control = malloc(recvmsg_msg_control_buffer_size);
 
                 clear_addr(recvmsg_msg_control + BigInt(recvmsg_msg_control_cmsg_len_offset), recvmsg_msg_control_cmsg_len_size);
@@ -1112,7 +1122,6 @@
                 const recvmsg_msg_controllen = sendmsg_msg_controllen;
                 const recvmsg_msg_flags = 0;  // initial value (recvmsg writes output flags here)
 
-                const recvmsg_msg_buffer_size = sendmsg_msg_buffer_size;
                 const recvmsg_msg = malloc(recvmsg_msg_buffer_size);
 
                 write_addr(recvmsg_msg + BigInt(recvmsg_msg_name_offset), recvmsg_msg_name, recvmsg_msg_name_size);
@@ -1158,6 +1167,7 @@
                 this.socketpair_sv_sb_offset = socketpair_sv_sb_offset;
 
                 this.socketpair_sv_buffer_size = socketpair_sv_buffer_size;
+                
                 this.socketpair_sv = socketpair_sv;
 
                 this.payload = payload;
@@ -1178,6 +1188,8 @@
                 this.sendmsg_msg_control_offset = sendmsg_msg_control_offset;
                 this.sendmsg_msg_controllen_offset = sendmsg_msg_controllen_offset;
                 this.sendmsg_msg_flags_offset = sendmsg_msg_flags_offset;
+                
+                this.sendmsg_msg_buffer_size = sendmsg_msg_buffer_size;
 
                 this.sendmsg_msg_name = sendmsg_msg_name;
                 this.sendmsg_msg_namelen = sendmsg_msg_namelen;
@@ -1188,18 +1200,20 @@
                 this.sendmsg_msg_iov_base_offset = sendmsg_msg_iov_base_offset;
                 this.sendmsg_msg_iov_len_offset = sendmsg_msg_iov_len_offset;
 
+                this.sendmsg_msg_iov_buffer_size = sendmsg_msg_iov_buffer_size;
+
                 this.sendmsg_msg_iov_base_data_size = sendmsg_msg_iov_base_data_size;
 
                 this.sendmsg_msg_iov_base_data_offset = sendmsg_msg_iov_base_data_offset;
 
+                this.sendmsg_msg_iov_base_buffer_size = sendmsg_msg_iov_base_buffer_size;
+
                 this.sendmsg_msg_iov_base_data = sendmsg_msg_iov_base_data;
 
-                this.sendmsg_msg_iov_base_buffer_size = sendmsg_msg_iov_base_buffer_size;
                 this.sendmsg_msg_iov_base = sendmsg_msg_iov_base;
 
                 this.sendmsg_msg_iov_len = sendmsg_msg_iov_len;
 
-                this.sendmsg_msg_iov_buffer_size = sendmsg_msg_iov_buffer_size;
                 this.sendmsg_msg_iov = sendmsg_msg_iov;
 
                 this.sendmsg_msg_iovlen = sendmsg_msg_iovlen;
@@ -1214,19 +1228,19 @@
                 this.sendmsg_msg_control_cmsg_type_offset = sendmsg_msg_control_cmsg_type_offset;
                 this.sendmsg_msg_control_cmsg_data_offset = sendmsg_msg_control_cmsg_data_offset;
 
+                this.sendmsg_msg_control_buffer_size = sendmsg_msg_control_buffer_size;
+
                 this.sendmsg_msg_control_cmsg_len = sendmsg_msg_control_cmsg_len;
                 this.sendmsg_msg_control_cmsg_level = sendmsg_msg_control_cmsg_level;
                 this.sendmsg_msg_control_cmsg_type = sendmsg_msg_control_cmsg_type;
 
-                this.sendmsg_msg_control_buffer_size = sendmsg_msg_control_buffer_size;
                 this.sendmsg_msg_control = sendmsg_msg_control;
 
                 this.sendmsg_msg_controllen = sendmsg_msg_controllen;
                 this.sendmsg_msg_flags = sendmsg_msg_flags;
 
-                this.sendmsg_msg_buffer_size = sendmsg_msg_buffer_size;
                 this.sendmsg_msg = sendmsg_msg;
-
+                
                 this.sendmsg_flags = sendmsg_flags;
 
                 this.recvmsg_msg_name_size = recvmsg_msg_name_size;
@@ -1245,6 +1259,8 @@
                 this.recvmsg_msg_controllen_offset = recvmsg_msg_controllen_offset;
                 this.recvmsg_msg_flags_offset = recvmsg_msg_flags_offset;
 
+                this.recvmsg_msg_buffer_size = recvmsg_msg_buffer_size;
+
                 this.recvmsg_msg_name = recvmsg_msg_name;
                 this.recvmsg_msg_namelen = recvmsg_msg_namelen;
 
@@ -1254,18 +1270,20 @@
                 this.recvmsg_msg_iov_base_offset = recvmsg_msg_iov_base_offset;
                 this.recvmsg_msg_iov_len_offset = recvmsg_msg_iov_len_offset;
 
+                this.recvmsg_msg_iov_buffer_size = recvmsg_msg_iov_buffer_size;
+
                 this.recvmsg_msg_iov_base_data_size = recvmsg_msg_iov_base_data_size;
 
                 this.recvmsg_msg_iov_base_data_offset = recvmsg_msg_iov_base_data_offset;
 
                 this.recvmsg_msg_iov_base_buffer_size = recvmsg_msg_iov_base_buffer_size;
+
                 this.recvmsg_msg_iov_base = recvmsg_msg_iov_base;
 
                 this.recvmsg_msg_iov_len = recvmsg_msg_iov_len;
 
-                this.recvmsg_msg_iov_buffer_size = recvmsg_msg_iov_buffer_size;
                 this.recvmsg_msg_iov = recvmsg_msg_iov;
-
+                
                 this.recvmsg_msg_iovlen = recvmsg_msg_iovlen;
 
                 this.recvmsg_msg_control_cmsg_len_size = recvmsg_msg_control_cmsg_len_size;
@@ -1279,12 +1297,12 @@
                 this.recvmsg_msg_control_cmsg_data_offset = recvmsg_msg_control_cmsg_data_offset;
 
                 this.recvmsg_msg_control_buffer_size = recvmsg_msg_control_buffer_size;
-                this.recvmsg_msg_control = recvmsg_msg_control;
                 
+                this.recvmsg_msg_control = recvmsg_msg_control;
+
                 this.recvmsg_msg_controllen = recvmsg_msg_controllen;
                 this.recvmsg_msg_flags = recvmsg_msg_flags;
 
-                this.recvmsg_msg_buffer_size = recvmsg_msg_buffer_size;
                 this.recvmsg_msg = recvmsg_msg;
 
                 this.recvmsg_flags = recvmsg_flags;
@@ -1311,7 +1329,7 @@
 
                 // https://man.freebsd.org/cgi/man.cgi?query=socketpair
                 //
-                // int socketpair(int domain, int type,	int protocol, int *sv);
+                // int socketpair(int domain, int type, int protocol, int *sv);
 
                 const socketpair_domain = this.socketpair_domain;
                 const socketpair_type = this.socketpair_type;
@@ -1324,6 +1342,7 @@
                 const socketpair_sv_sb_offset = this.socketpair_sv_sb_offset;
 
                 const socketpair_sv_buffer_size = this.socketpair_sv_buffer_size;
+
                 const socketpair_sv = this.socketpair_sv;
 
                 // resets
@@ -1353,7 +1372,7 @@
                     const sb64 = read_addr(socketpair_sv + BigInt(socketpair_sv_sb_offset), socketpair_sv_sb_size);
                     const sb32 = Number(sb64);
 
-                    if (sa32 === sb32) {
+                    if (sb32 === sa32) {
                         error_found = true;
                     } else if (validate_sa && !validate_fd32(sa32)) {
                         error_found = true;
@@ -1492,15 +1511,14 @@
                         } else {
                             fd32 = Number(fd64);
 
-                            if (validate_fd && !validate_fd32(fd32)) {
-                                error_found = true;
-                            }
+                            // not necessary
+                            //
+                            // if (validate_fd && !validate_fd32(fd32)) {
+                            //     error_found = true;
+                            // }
                         }
                     }
                 }
-
-                // const payload = this.payload;  // not used
-                // const payload_size = this.payload_size;  // not used
 
                 let dup_fd64 = null;
                 let dup_fd32 = null;
@@ -1514,7 +1532,7 @@
 
                     // https://man.freebsd.org/cgi/man.cgi?sendmsg
                     //
-                    // ssize_t sendmsg(int s, const struct msghdr *msg,	int flags);
+                    // ssize_t sendmsg(int s, const struct msghdr *msg, int flags);
 
                     const sendmsg_s = sa64;
 
@@ -1545,6 +1563,8 @@
                     // const sendmsg_msg_control_offset = this.sendmsg_msg_control_offset;  // not used
                     // const sendmsg_msg_controllen_offset = this.sendmsg_msg_controllen_offset;  // not used
                     // const sendmsg_msg_flags_offset = this.sendmsg_msg_flags_offset;  // not used
+                    
+                    // const sendmsg_msg_buffer_size = this.sendmsg_msg_buffer_size;  // not used
 
                     // const sendmsg_msg_name = this.sendmsg_msg_name;  // not used
                     // const sendmsg_msg_namelen = this.sendmsg_msg_namelen;  // not used
@@ -1562,18 +1582,20 @@
                     // const sendmsg_msg_iov_base_offset = this.sendmsg_msg_iov_base_offset;  // not used
                     // const sendmsg_msg_iov_len_offset = this.sendmsg_msg_iov_len_offset;  // not used
 
+                    // const sendmsg_msg_iov_buffer_size = this.sendmsg_msg_iov_buffer_size;  // not used
+
                     // const sendmsg_msg_iov_base_data_size = this.sendmsg_msg_iov_base_data_size;  // not used
 
                     // const sendmsg_msg_iov_base_data_offset = this.sendmsg_msg_iov_base_data_offset;  // not used
 
+                    // const sendmsg_msg_iov_base_buffer_size = this.sendmsg_msg_iov_base_buffer_size;  // not used
+
                     const sendmsg_msg_iov_base_data = this.sendmsg_msg_iov_base_data;
 
-                    // const sendmsg_msg_iov_base_buffer_size = this.sendmsg_msg_iov_base_buffer_size;  // not used
                     // const sendmsg_msg_iov_base = this.sendmsg_msg_iov_base;  // not used
 
                     const sendmsg_msg_iov_len = this.sendmsg_msg_iov_len;
 
-                    // const sendmsg_msg_iov_buffer_size = this.sendmsg_msg_iov_buffer_size;  // not used
                     // const sendmsg_msg_iov = this.sendmsg_msg_iov;  // not used
 
                     // const sendmsg_msg_iovlen = this.sendmsg_msg_iovlen;  // not used
@@ -1597,12 +1619,13 @@
                     // const sendmsg_msg_control_cmsg_type_offset = this.sendmsg_msg_control_cmsg_type_offset;  // not used
                     const sendmsg_msg_control_cmsg_data_offset = this.sendmsg_msg_control_cmsg_data_offset;
 
+                    // const sendmsg_msg_control_buffer_size = this.sendmsg_msg_control_buffer_size;  // not used
+
                     const sendmsg_msg_control_cmsg_len = this.sendmsg_msg_control_cmsg_len;
                     const sendmsg_msg_control_cmsg_level = this.sendmsg_msg_control_cmsg_level;
                     const sendmsg_msg_control_cmsg_type = this.sendmsg_msg_control_cmsg_type;
                     const sendmsg_msg_control_cmsg_data = fd32;
 
-                    // const sendmsg_msg_control_buffer_size = this.sendmsg_msg_control_buffer_size;  // not used
                     const sendmsg_msg_control = this.sendmsg_msg_control;
 
                     write_addr(
@@ -1610,13 +1633,12 @@
                         , sendmsg_msg_control_cmsg_data
                         , sendmsg_msg_control_cmsg_data_size
                     );
-
+                    
                     // const sendmsg_msg_controllen = this.sendmsg_msg_controllen;  // not used
                     // const sendmsg_msg_flags = this.sendmsg_msg_flags;  // not used
 
-                    // const sendmsg_msg_buffer_size = this.sendmsg_msg_buffer_size;  // not used
                     const sendmsg_msg = this.sendmsg_msg;
-
+                    
                     const sendmsg_flags = this.sendmsg_flags;
 
                     const sendmsg_ret64 = syscall(SYSCALL.sendmsg, sendmsg_s, sendmsg_msg, sendmsg_flags);
@@ -1662,6 +1684,8 @@
                         const recvmsg_msg_controllen_offset = this.recvmsg_msg_controllen_offset;
                         const recvmsg_msg_flags_offset = this.recvmsg_msg_flags_offset;
 
+                        // const recvmsg_msg_buffer_size = this.recvmsg_msg_buffer_size;  // not used
+
                         // const recvmsg_msg_name = this.recvmsg_msg_name;  // not used
                         const recvmsg_msg_namelen = this.recvmsg_msg_namelen;
 
@@ -1678,18 +1702,20 @@
                         // const recvmsg_msg_iov_base_offset = this.recvmsg_msg_iov_base_offset;  // not used
                         // const recvmsg_msg_iov_len_offset = this.recvmsg_msg_iov_len_offset;  // not used
 
+                        // const recvmsg_msg_iov_buffer_size = this.recvmsg_msg_iov_buffer_size;  // not used
+
                         const recvmsg_msg_iov_base_data_size = this.recvmsg_msg_iov_base_data_size;
 
                         const recvmsg_msg_iov_base_data_offset = this.recvmsg_msg_iov_base_data_offset;
 
                         const recvmsg_msg_iov_base_buffer_size = this.recvmsg_msg_iov_base_buffer_size;
+
                         const recvmsg_msg_iov_base = this.recvmsg_msg_iov_base;
 
                         const recvmsg_msg_iov_len = this.recvmsg_msg_iov_len;
 
-                        // const recvmsg_msg_iov_buffer_size = this.recvmsg_msg_iov_buffer_size;  // not used
                         // const recvmsg_msg_iov = this.recvmsg_msg_iov;  // not used
-
+                        
                         // const recvmsg_msg_iovlen = this.recvmsg_msg_iovlen;  // not used
 
                         // https://github.com/freebsd/freebsd-src/blob/main/sys/sys/socket.h
@@ -1712,12 +1738,12 @@
                         const recvmsg_msg_control_cmsg_data_offset = this.recvmsg_msg_control_cmsg_data_offset;
 
                         // const recvmsg_msg_control_buffer_size = this.recvmsg_msg_control_buffer_size;  // not used
+                        
                         const recvmsg_msg_control = this.recvmsg_msg_control;
 
                         const recvmsg_msg_controllen = this.recvmsg_msg_controllen;
                         const recvmsg_msg_flags = this.recvmsg_msg_flags;
 
-                        // const recvmsg_msg_buffer_size = this.recvmsg_msg_buffer_size;  // not used
                         const recvmsg_msg = this.recvmsg_msg;
 
                         const recvmsg_flags = this.recvmsg_flags;
@@ -2044,6 +2070,8 @@
                     return;
                 }
 
+                let started = true;
+
                 // closing the sockets
 
                 close_fd32(this.sa32);  // ignore return value
@@ -2057,7 +2085,9 @@
                 this.sb64 = null;
                 this.sb32 = null;
 
-                this.started = false;
+                started = false;
+
+                this.started = started;
 
                 return;
             }
@@ -2093,7 +2123,7 @@
 
                     duper.stop();
 
-                    // creating a test log
+                    // creating a test log array
 
                     const test_log_arr = [];
 
@@ -2135,7 +2165,7 @@
                         }
                     }
 
-                    // joining the test log
+                    // joining the test log array
 
                     test_log = test_log_arr.join("\n");
                 }
