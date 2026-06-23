@@ -2142,32 +2142,32 @@
 
                     test_log_arr.push("started_a:");
 
-                    if (!started_a) {
-                        test_log_arr.push("false");
-                    } else {
+                    if (started_a) {
                         test_log_arr.push("true");
+                    } else {
+                        test_log_arr.push("false");
+                    }
 
-                        // logging error_found_a
+                    // logging error_found_a
 
-                        test_log_arr.push("error_found_a:");
+                    test_log_arr.push("error_found_a:");
 
-                        if (error_found_a) {
-                            test_log_arr.push("true");
+                    if (error_found_a) {
+                        test_log_arr.push("true");
+                    } else {
+                        test_log_arr.push("false");
+
+                        // logging dup_fd64_a
+
+                        test_log_arr.push("dup_fd64_a:");
+                        test_log_arr.push(toHex(dup_fd64_a));
+
+                        test_log_arr.push("closing dup_fd32_a:");
+
+                        if (close_fd32(dup_fd32_a)) {
+                            test_log_arr.push("success");
                         } else {
-                            test_log_arr.push("false");
-
-                            // logging dup_fd64_a
-
-                            test_log_arr.push("dup_fd64_a:");
-                            test_log_arr.push(toHex(dup_fd64_a));
-
-                            test_log_arr.push("closing dup_fd32_a:");
-
-                            if (close_fd32(dup_fd32_a)) {
-                                test_log_arr.push("success");
-                            } else {
-                                test_log_arr.push("failure");
-                            }
+                            test_log_arr.push("failure");
                         }
                     }
 
@@ -2175,32 +2175,32 @@
 
                     test_log_arr.push("started_b:");
 
-                    if (!started_b) {
-                        test_log_arr.push("false");
-                    } else {
+                    if (started_b) {
                         test_log_arr.push("true");
+                    } else {
+                        test_log_arr.push("false");
+                    }
 
-                        // logging error_found_b
+                    // logging error_found_b
 
-                        test_log_arr.push("error_found_b:");
+                    test_log_arr.push("error_found_b:");
 
-                        if (error_found_b) {
-                            test_log_arr.push("true");
+                    if (error_found_b) {
+                        test_log_arr.push("true");
+                    } else {
+                        test_log_arr.push("false");
+
+                        // logging dup_fd64_b
+
+                        test_log_arr.push("dup_fd64_b:");
+                        test_log_arr.push(toHex(dup_fd64_b));
+
+                        test_log_arr.push("closing dup_fd32_b:");
+
+                        if (close_fd32(dup_fd32_b)) {
+                            test_log_arr.push("success");
                         } else {
-                            test_log_arr.push("false");
-
-                            // logging dup_fd64_b
-
-                            test_log_arr.push("dup_fd64_b:");
-                            test_log_arr.push(toHex(dup_fd64_b));
-
-                            test_log_arr.push("closing dup_fd32_b:");
-
-                            if (close_fd32(dup_fd32_b)) {
-                                test_log_arr.push("success");
-                            } else {
-                                test_log_arr.push("failure");
-                            }
+                            test_log_arr.push("failure");
                         }
                     }
 
